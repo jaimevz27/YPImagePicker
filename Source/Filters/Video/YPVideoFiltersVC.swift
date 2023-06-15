@@ -34,6 +34,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     private var playbackTimeCheckerTimer: Timer?
     private var imageGenerator: AVAssetImageGenerator?
     private var isFromSelectionVC = false
+    private var wasPlaying = false
 
     private let trimmerContainerView: UIView = {
         let v = UIView()
@@ -76,6 +77,19 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         v.isHidden = true
         return v
     }()
+    private var trimmer: VideoTrimmer = {
+        let trimmer = VideoTrimmer()
+        trimmer.minimumDuration = CMTime(seconds: 4, preferredTimescale: 600)
+        trimmer.maximumDuration = CMTime(seconds: 10, preferredTimescale: 600)
+        trimmer.addTarget(self, action: #selector(didBeginTrimming(_:)), for: VideoTrimmer.didBeginTrimming)
+        trimmer.addTarget(self, action: #selector(didEndTrimming(_:)), for: VideoTrimmer.didEndTrimming)
+        trimmer.addTarget(self, action: #selector(selectedRangeDidChanged(_:)), for: VideoTrimmer.selectedRangeChanged)
+        trimmer.addTarget(self, action: #selector(didBeginScrubbing(_:)), for: VideoTrimmer.didBeginScrubbing)
+        trimmer.addTarget(self, action: #selector(didEndScrubbing(_:)), for: VideoTrimmer.didEndScrubbing)
+        trimmer.addTarget(self, action: #selector(progressDidChanged(_:)), for: VideoTrimmer.progressChanged)
+        trimmer.translatesAutoresizingMaskIntoConstraints = false
+        return trimmer
+    }()
 
     // MARK: - Live cycle
 
@@ -102,8 +116,25 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
 
     override public func viewDidAppear(_ animated: Bool) {
-        trimmerView.asset = inputAsset
-        trimmerView.delegate = self
+        
+        //OLD CODE
+//        trimmerView.asset = inputAsset
+//        trimmerView.delegate = self
+        
+        //NEW CODE - START
+        trimmer.asset = inputAsset
+        updatePlayerAsset()
+        videoView.player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 30), queue: .main) { [weak self] time in
+            guard let self = self else {return}
+            // when we're not trimming, the players starting point is actual later than the trimmer,
+            // (because the vidoe has been trimmed), so we need to account for that.
+            // When we're trimming, we always show the full video
+            let finalTime = self.trimmer.trimmingState == .none ? CMTimeAdd(time, self.trimmer.selectedRange.start) : time
+            self.trimmer.progress = finalTime
+        }
+
+        updateLabels()
+        //NEW CODE - END
         
         coverThumbSelectorView.asset = inputAsset
         coverThumbSelectorView.delegate = self
@@ -258,6 +289,53 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         videoView.stop()
     }
     
+    
+    // MARK: - Input
+    @objc private func didBeginTrimming(_ sender: VideoTrimmer) {
+        updateLabels()
+
+        wasPlaying = (videoView.player.timeControlStatus != .paused)
+        videoView.player.pause()
+
+        updatePlayerAsset()
+    }
+
+    @objc private func didEndTrimming(_ sender: VideoTrimmer) {
+        updateLabels()
+
+        if wasPlaying == true {
+            videoView.player.play()
+        }
+
+        updatePlayerAsset()
+    }
+
+    @objc private func selectedRangeDidChanged(_ sender: VideoTrimmer) {
+        updateLabels()
+    }
+
+    @objc private func didBeginScrubbing(_ sender: VideoTrimmer) {
+        updateLabels()
+
+        wasPlaying = (videoView.player.timeControlStatus != .paused)
+        videoView.player.pause()
+    }
+
+    @objc private func didEndScrubbing(_ sender: VideoTrimmer) {
+        updateLabels()
+
+        if wasPlaying == true {
+            videoView.player.play()
+        }
+    }
+
+    @objc private func progressDidChanged(_ sender: VideoTrimmer) {
+        updateLabels()
+
+        let time = CMTimeSubtract(trimmer.progress, trimmer.selectedRange.start)
+        videoView.player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
+    }
+    
     // MARK: - Various Methods
 
     // Updates the bounds of the cover picker if the video is trimmed
@@ -277,6 +355,31 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             }
         }
     }
+    
+    //NEW CODE - START
+    private func updateLabels() {
+//        leadingTrimLabel.text = trimmer.selectedRange.start.displayString
+//        currentTimeLabel.text = trimmer.progress.displayString
+//        trailingTrimLabel.text = trimmer.selectedRange.end.displayString
+        print("Start: \(trimmer.selectedRange.start.displayString)")
+        print("current: \(trimmer.progress.displayString)")
+        print("End: \(trimmer.selectedRange.end.displayString)")
+    }
+
+    private func updatePlayerAsset() {
+//        let outputRange = trimmer.trimmingState == .none ? trimmer.selectedRange : asset.fullRange
+//        let trimmedAsset = asset.trimmedComposition(outputRange)
+//        if trimmedAsset != player.currentItem?.asset {
+//            player.replaceCurrentItem(with: AVPlayerItem(asset: trimmedAsset))
+//        }
+        
+        let outputRange = trimmer.trimmingState == .none ? trimmer.selectedRange : inputAsset.fullRange
+        let trimmedAsset = inputAsset.trimmedComposition(outputRange)
+        if trimmedAsset != videoView.player.currentItem?.asset {
+            videoView.player.replaceCurrentItem(with: AVPlayerItem(asset: trimmedAsset))
+        }
+    }
+    //NEW CODE - END
     
     // MARK: - Trimmer playback
     
@@ -319,20 +422,20 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 }
 
 // MARK: - TrimmerViewDelegate
-extension YPVideoFiltersVC: TrimmerViewDelegate {
-    public func positionBarStoppedMoving(_ playerTime: CMTime) {
-        videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-        videoView.play()
-        startPlaybackTimeChecker()
-        updateCoverPickerBounds()
-    }
-    
-    public func didChangePositionBar(_ playerTime: CMTime) {
-        stopPlaybackTimeChecker()
-        videoView.pause()
-        videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
-    }
-}
+//extension YPVideoFiltersVC: TrimmerViewDelegate {
+//    public func positionBarStoppedMoving(_ playerTime: CMTime) {
+//        videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+//        videoView.play()
+//        startPlaybackTimeChecker()
+//        updateCoverPickerBounds()
+//    }
+//
+//    public func didChangePositionBar(_ playerTime: CMTime) {
+//        stopPlaybackTimeChecker()
+//        videoView.pause()
+//        videoView.player.seek(to: playerTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
+//    }
+//}
 
 // MARK: - ThumbSelectorViewDelegate
 extension YPVideoFiltersVC: ThumbSelectorViewDelegate {

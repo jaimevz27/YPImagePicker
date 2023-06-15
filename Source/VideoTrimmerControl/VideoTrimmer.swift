@@ -74,6 +74,7 @@ import AVFoundation
 
 	// a clip cannot be trimmed shorter than this duration
 	var minimumDuration: CMTime = .zero
+    var maximumDuration: CMTime = CMTime(seconds: 10, preferredTimescale: 600)
 
 	// the available range of the asset.
 	// Will be set to the full duration of the asset when assigning a new asset
@@ -564,6 +565,12 @@ import AVFoundation
 				let location = sender.location(in: self)
 				var time = timeForLocation(location.x + grabberOffset)
 				let newDuration = CMTimeSubtract(selectedRange.end, time)
+            
+                print("time: \(CMTimeGetSeconds(time))")
+                print("selected start: \(CMTimeGetSeconds(selectedRange.start))")
+                print("newDuration: \(CMTimeGetSeconds(newDuration))")
+                print("minimunDuration: \(CMTimeGetSeconds(minimumDuration))")
+                print("maximumDuration: \(CMTimeGetSeconds(maximumDuration))")
 
 				var didClamp = false
 				if CMTimeCompare(newDuration, minimumDuration) == -1 {
@@ -578,6 +585,11 @@ import AVFoundation
 					time = range.end
 					didClamp = true
 				}
+            
+                if CMTimeCompare(maximumDuration,newDuration) == -1 {
+                    time = CMTimeSubtract(selectedRange.end, maximumDuration)
+                    didClamp = true
+                }
 
 
 				if didClamp == true && didClamp != didClampWhilePanning {
@@ -623,6 +635,11 @@ import AVFoundation
 				var time = timeForLocation(location.x - grabberOffset)
 
 				let newDuration = CMTimeSubtract(time, selectedRange.start)
+            
+                print("time: \(CMTimeGetSeconds(time))")
+                print("selected start: \(CMTimeGetSeconds(selectedRange.start))")
+                print("newDuration: \(CMTimeGetSeconds(newDuration))")
+                print("minimunDuration: \(CMTimeGetSeconds(minimumDuration))")
 
 				var didClamp = false
 				if CMTimeCompare(newDuration, minimumDuration) == -1 {
@@ -637,6 +654,12 @@ import AVFoundation
 					time = range.end
 					didClamp = true
 				}
+            
+                if CMTimeCompare(maximumDuration, newDuration) == -1 {
+                    print("Maximo alcanzado")
+                    time = CMTimeAdd(selectedRange.start, maximumDuration)
+                    didClamp = true
+                }
 
 				if didClamp == true && didClamp != didClampWhilePanning {
 					impactFeedbackGenerator?.impactOccurred()

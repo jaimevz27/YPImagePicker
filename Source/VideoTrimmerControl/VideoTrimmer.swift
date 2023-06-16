@@ -93,6 +93,7 @@ import AVFoundation
 	// Will be set to the full duration of the asset when assigning a new asset
 	var range: CMTimeRange = .invalid {
 		didSet {
+            ypLog("Range Setup")
 			setNeedsLayout()
 		}
 	}
@@ -101,6 +102,9 @@ import AVFoundation
 	// when changing asset.
 	var selectedRange: CMTimeRange = .invalid {
 		didSet {
+            ypLog("SelectedRange Setup")
+            ypLog("start \(CMTimeGetSeconds(selectedRange.start))")
+            ypLog("end \(CMTimeGetSeconds(selectedRange.end))")
 			setNeedsLayout()
 		}
 	}
@@ -725,6 +729,13 @@ import AVFoundation
 		if left < 0 {
 			left = -inset
 		}
+        
+        ypLog("left \(left)")
+        ypLog("right \(right)")
+        
+        ypLog("selectedRangeStart \(CMTimeGetSeconds(selectedRange.start))")
+        ypLog("selectedRangeEnd \(CMTimeGetSeconds(selectedRange.end))")
+        ypLog("size is: \(size)")
 
 		let rect = CGRect(origin: .zero, size: size)
 		shadowView.frame = rect

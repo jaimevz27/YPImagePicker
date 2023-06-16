@@ -90,7 +90,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         trimmer.addTarget(self, action: #selector(didBeginScrubbing(_:)), for: VideoTrimmer.didBeginScrubbing)
         trimmer.addTarget(self, action: #selector(didEndScrubbing(_:)), for: VideoTrimmer.didEndScrubbing)
         trimmer.addTarget(self, action: #selector(progressDidChanged(_:)), for: VideoTrimmer.progressChanged)
-        trimmer.translatesAutoresizingMaskIntoConstraints = false
         return trimmer
     }()
 
@@ -213,7 +212,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 //        trimmerView.Height == trimmerContainerView.Height / 3
         
         trimmer.fillHorizontally(padding: 30).centerVertically()
-        trimmer.Height == trimmerContainerView.Height / 3
+        //trimmer.Height == trimmerContainerView.Height / 3
+        trimmer.height(50.0)
 
         //coverThumbSelectorView.followEdges(trimmerView)
     }

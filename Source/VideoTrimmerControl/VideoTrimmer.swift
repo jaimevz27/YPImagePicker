@@ -57,7 +57,20 @@ import AVFoundation
 			if let asset = asset {
 				let duration = asset.duration
 				range = CMTimeRange(start: .zero, duration: duration)
-				selectedRange = range
+                
+                //Si el video dura mas que el tiempo minimo, se elige el tiempo minimo
+                if CMTimeCompare(duration, minimumDuration) == 1 {
+                    let defaultRange = CMTimeRange(start: .zero, duration: minimumDuration)
+                    selectedRange = defaultRange
+                } else {
+                    selectedRange = range
+                }
+                
+                //Si el video dura menos que el tiempo maximo, se elige la duracion como tiempo maximo
+                if CMTimeCompare(duration, maximumDuration) == -1 {
+                    maximumDuration = duration
+                }
+            
 				lastKnownViewSizeForThumbnailGeneration = .zero
 				setNeedsLayout()
 			}
@@ -74,7 +87,7 @@ import AVFoundation
 
 	// a clip cannot be trimmed shorter than this duration
 	var minimumDuration: CMTime = .zero
-    var maximumDuration: CMTime = CMTime(seconds: 10, preferredTimescale: 600)
+    var maximumDuration: CMTime = .zero
 
 	// the available range of the asset.
 	// Will be set to the full duration of the asset when assigning a new asset

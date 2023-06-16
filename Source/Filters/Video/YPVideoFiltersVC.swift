@@ -115,6 +115,9 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         imageGenerator = AVAssetImageGenerator(asset: self.inputAsset)
         imageGenerator?.appliesPreferredTrackTransform = true
         //didChangeThumbPosition(CMTime(seconds: 1, preferredTimescale: 1))
+        
+        trimmer.asset = inputAsset
+        updatePlayerAsset()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -124,8 +127,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 //        trimmerView.delegate = self
         
         //NEW CODE - START
-        trimmer.asset = inputAsset
-        updatePlayerAsset()
         videoView.player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 30), queue: .main) { [weak self] time in
             guard let self = self else {return}
             // when we're not trimming, the players starting point is actual later than the trimmer,

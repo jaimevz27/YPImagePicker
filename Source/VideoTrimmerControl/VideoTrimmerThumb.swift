@@ -11,8 +11,8 @@ import UIKit
 class VideoTrimmerThumb: UIView {
 	var isActive = false
 
-	var leadingChevronImageView = UIImageView(image: UIImage(named:"vtc_chevron_left")!)
-	var trailingChevronView = UIImageView(image: UIImage(named:"vtc_chevron_right")!)
+	var leadingChevronImageView = UIImageView(image: imageFromBundle("vtc_chevron_left"))
+	var trailingChevronView = UIImageView(image: imageFromBundle("vtc_chevron_right"))
 
 	var wrapperView = UIView()
 	var leadingView = UIView()

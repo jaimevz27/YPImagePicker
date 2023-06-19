@@ -234,7 +234,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                 switch session.status {
                 case .completed:
                     DispatchQueue.main.async {
-                            let coverImage = UIImage(named: "icon")!
+                            let coverImage = imageFromBundle("icon")
 //                        if let coverImage = self?.coverImageView.image {
                             let resultVideo = YPMediaVideo(thumbnail: coverImage,
 														   videoURL: destinationURL,

@@ -126,9 +126,17 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 //        trimmerView.asset = inputAsset
 //        trimmerView.delegate = self
         
+//        coverThumbSelectorView.asset = inputAsset
+//        coverThumbSelectorView.delegate = self
+//
+//        selectTrim()
+        videoView.loadVideo(inputVideo)
+        videoView.showPlayImage(show: true)
+        //startPlaybackTimeChecker()
+        
         //NEW CODE - START
         videoView.player.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 30), queue: .main) { [weak self] time in
-            guard let self = self else {return}
+            guard let self = self else { return }
             // when we're not trimming, the players starting point is actual later than the trimmer,
             // (because the vidoe has been trimmed), so we need to account for that.
             // When we're trimming, we always show the full video
@@ -139,14 +147,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
         updateLabels()
         //NEW CODE - END
-        
-//        coverThumbSelectorView.asset = inputAsset
-//        coverThumbSelectorView.delegate = self
-//
-//        selectTrim()
-        videoView.loadVideo(inputVideo)
-        videoView.showPlayImage(show: true)
-        //startPlaybackTimeChecker()
         
         super.viewDidAppear(animated)
     }

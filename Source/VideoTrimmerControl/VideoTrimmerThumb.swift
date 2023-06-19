@@ -11,8 +11,8 @@ import UIKit
 class VideoTrimmerThumb: UIView {
 	var isActive = false
 
-	var leadingChevronImageView = UIImageView(image: UIImage(named: "vtc_chevron_left"))
-	var trailingChevronView = UIImageView(image: UIImage(named: "vtc_chevron_right"))
+	var leadingChevronImageView = UIImageView(image: UIImage(named:"vtc_chevron_left")!)
+	var trailingChevronView = UIImageView(image: UIImage(named:"vtc_chevron_right")!)
 
 	var wrapperView = UIView()
 	var leadingView = UIView()
@@ -45,11 +45,11 @@ class VideoTrimmerThumb: UIView {
 		leadingChevronImageView.contentMode = .scaleAspectFill
 		trailingChevronView.contentMode = .scaleAspectFill
 
-		leadingChevronImageView.tintColor = .white
-		trailingChevronView.tintColor = .white
-
-		leadingChevronImageView.tintAdjustmentMode = .normal
-		trailingChevronView.tintAdjustmentMode = .normal
+//		leadingChevronImageView.tintColor = .white
+//		trailingChevronView.tintColor = .white
+//
+//		leadingChevronImageView.tintAdjustmentMode = .normal
+//		trailingChevronView.tintAdjustmentMode = .normal
 
 		leadingView.layer.cornerRadius = 6
 //		leadingView.layer.cornerCurve = .continuous

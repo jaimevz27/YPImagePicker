@@ -92,6 +92,30 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         trimmer.addTarget(self, action: #selector(progressDidChanged(_:)), for: VideoTrimmer.progressChanged)
         return trimmer
     }()
+    private let lblVideoTimeRange: UILabel = {
+        let v = UILabel()
+        v.textColor = .ypLabel
+        v.font = UIFont.systemFont(ofSize: 16, weight: .regular)
+        v.alpha = 0.0
+        return v
+    }()
+    private let lblVideoLength: UILabel = {
+        let v = UILabel()
+        v.textColor = .white
+        v.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        v.text = "00:00"
+        v.setContentCompressionResistancePriority(.required, for: .horizontal)
+        v.setContentCompressionResistancePriority(.required, for: .vertical)
+        return v
+    }()
+    private let videoLengthView: UIView = {
+        let v = UIView()
+        v.backgroundColor = .black
+        v.clipsToBounds = true
+        v.layer.cornerRadius = 10
+        v.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        return v
+    }()
 
     // MARK: - Live cycle
 
@@ -187,7 +211,11 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             coverBottomItem,
             videoView,
             trimmerContainerView.subviews(
-                trimmer
+                lblVideoTimeRange,
+                trimmer,
+                videoLengthView.subviews(
+                    lblVideoLength
+                )
             )
         )
 
@@ -204,6 +232,12 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         trimmerContainerView.Bottom == trimBottomItem.Top
         trimmer.fillHorizontally(padding: 16).centerVertically()
         trimmer.height(50.0)
+        lblVideoTimeRange.Bottom == trimmer.Top
+        lblVideoTimeRange.centerHorizontally()
+        videoLengthView.centerHorizontally()
+        videoLengthView.height(40)
+        videoLengthView.Top == trimmer.Bottom + 20
+        lblVideoLength.fillContainer(padding: 4)
     }
 
     // MARK: - Actions
@@ -302,6 +336,12 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     @objc private func didEndTrimming(_ sender: VideoTrimmer) {
         updateLabels()
+        
+        if lblVideoTimeRange.alpha > 0 {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseOut]) {
+                self.lblVideoTimeRange.alpha = 0
+            }
+        }
 
         if wasPlaying == true {
             videoView.player.play()
@@ -312,6 +352,11 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     @objc private func selectedRangeDidChanged(_ sender: VideoTrimmer) {
         updateLabels()
+        if lblVideoTimeRange.alpha == 0 {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseOut]) {
+                self.lblVideoTimeRange.alpha = 1
+            }
+        }
     }
 
     @objc private func didBeginScrubbing(_ sender: VideoTrimmer) {
@@ -346,6 +391,15 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         print("Start: \(trimmer.selectedRange.start.displayString)")
         print("current: \(trimmer.progress.displayString)")
         print("End: \(trimmer.selectedRange.end.displayString)")
+        
+        if trimmer.selectedRange != .invalid && trimmer.selectedRange != .zero {
+            let duration = CMTimeSubtract(trimmer.selectedRange.end, trimmer.selectedRange.start)
+            print("Duration: \(duration.displayString)")
+            lblVideoLength.text = "\(duration.displayString)"
+        }
+       
+        
+        lblVideoTimeRange.text = "\(trimmer.selectedRange.start.displayString) - \(trimmer.selectedRange.end.displayString)"
     }
 
     private func updatePlayerAsset() {

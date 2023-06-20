@@ -16,6 +16,6 @@ extension CMTime {
         formatter.unitsStyle = .positional
         formatter.zeroFormattingBehavior = .pad
         formatter.allowedUnits = [.minute, .second]
-        return String(format: "%@.%03d", formatter.string(from: offset) ?? "00:00", nanoseconds)
+        return String(format: "%@", formatter.string(from: offset) ?? "00:00")
     }
 }

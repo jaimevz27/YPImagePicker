@@ -117,8 +117,11 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             // (because the vidoe has been trimmed), so we need to account for that.
             // When we're trimming, we always show the full video
             ypLog("trimmingState \(self.trimmer.trimmingState)")
+            ypLog("time \(CMTimeGetSeconds(time))")
+            ypLog("Start \(CMTimeGetSeconds(self.trimmer.selectedRange.start))")
             let finalTime = self.trimmer.trimmingState == .none ? CMTimeAdd(time, self.trimmer.selectedRange.start) : time
             ypLog(" addPeriodicTimeObserver trimmer progress is: \(CMTimeGetSeconds(finalTime))")
+            print("======================================================")
             self.trimmer.progress = finalTime
         }
 

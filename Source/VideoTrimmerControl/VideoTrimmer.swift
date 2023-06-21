@@ -59,16 +59,16 @@ import AVFoundation
 				let duration = asset.duration
 				range = CMTimeRange(start: .zero, duration: duration)
                 
-                //if the video length is longer than minimum duration time, defaults to the lesser time
-                if CMTimeCompare(duration, minimumDuration) == 1 {
-                    selectedRange = CMTimeRange(start: .zero, duration: minimumDuration)
-                } else {
-                    selectedRange = range
-                }
-                
                 //if maximum duration is not setted or video full length is lower than maximum duration, defaults to video full length.
                 if maximumDuration == .zero || CMTimeCompare(duration, maximumDuration) == -1 {
                     maximumDuration = duration
+                }
+                
+                //if the video length is longer than minimum duration time, defaults to the lesser time
+                if CMTimeCompare(duration, maximumDuration) == 1 {
+                    selectedRange = CMTimeRange(start: .zero, duration: maximumDuration)
+                } else {
+                    selectedRange = range
                 }
             
 				lastKnownViewSizeForThumbnailGeneration = .zero
@@ -256,8 +256,8 @@ import AVFoundation
 
 		thumbnailClipView.clipsToBounds = true
 		thumbnailTrackView.clipsToBounds = true
-		thumbnailLeadingCoverView.backgroundColor = UIColor(white: 0, alpha: 0.75)
-		thumbnailTrailingCoverView.backgroundColor = UIColor(white: 0, alpha: 0.75)
+		thumbnailLeadingCoverView.backgroundColor = UIColor(white: 1, alpha: 0.75)
+		thumbnailTrailingCoverView.backgroundColor = UIColor(white: 1, alpha: 0.75)
 
 		leadingThumbRest.backgroundColor = thumbRestColor
 		trailingThumbRest.backgroundColor = thumbRestColor

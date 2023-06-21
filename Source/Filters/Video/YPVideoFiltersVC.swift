@@ -245,10 +245,6 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             }
         }
 
-        if wasPlaying == true {
-            //videoView.player.play()
-        }
-
         updatePlayerAsset()
     }
 

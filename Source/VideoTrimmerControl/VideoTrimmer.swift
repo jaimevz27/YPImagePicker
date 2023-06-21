@@ -140,6 +140,7 @@ import AVFoundation
 	// defines where the progress indicator is shown.
 	var progress: CMTime = .zero {
 		didSet {
+            ypLog("did Set \(CMTimeGetSeconds(progress))")
 			setNeedsLayout()
 		}
 	}
@@ -646,10 +647,6 @@ import AVFoundation
 				startZoomWaitTimer()
 
 			case .ended:
-                ypLog("leadingGrabberPanned ENDED")
-                progress = selectedRange.start
-                sendActions(for: Self.progressChanged)
-            
 				stopPanning()
 
 			case .cancelled:
@@ -713,10 +710,6 @@ import AVFoundation
 				startZoomWaitTimer()
 
 			case .ended:
-                ypLog("trailingGrabberPanned ENDED")
-                progress = selectedRange.end
-                sendActions(for: Self.progressChanged)
-            
 				stopPanning()
 
 			case .cancelled:

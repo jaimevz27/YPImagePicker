@@ -116,7 +116,9 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             // when we're not trimming, the players starting point is actual later than the trimmer,
             // (because the vidoe has been trimmed), so we need to account for that.
             // When we're trimming, we always show the full video
+            ypLog("trimmingState \(self.trimmer.trimmingState)")
             let finalTime = self.trimmer.trimmingState == .none ? CMTimeAdd(time, self.trimmer.selectedRange.start) : time
+            ypLog(" addPeriodicTimeObserver trimmer progress is: \(CMTimeGetSeconds(finalTime))")
             self.trimmer.progress = finalTime
         }
 
@@ -277,8 +279,9 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
 
     @objc private func progressDidChanged(_ sender: VideoTrimmer) {
         updateLabels()
-
         let time = CMTimeSubtract(trimmer.progress, trimmer.selectedRange.start)
+        ypLog("progressDidChanged progress: \(CMTimeGetSeconds(trimmer.progress))")
+        ypLog("progressDidChanged time: \(CMTimeGetSeconds(time))")
         videoView.player.seek(to: time, toleranceBefore: .zero, toleranceAfter: .zero)
     }
     
@@ -297,6 +300,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         if trimmedAsset != videoView.player.currentItem?.asset {
             videoView.player.replaceCurrentItem(with: AVPlayerItem(asset: trimmedAsset))
         }
+        ypLog("updatePlayerAsset called")
     }
     
     private func updateTrimmerRange() {

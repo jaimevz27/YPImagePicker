@@ -15,9 +15,9 @@ class VideoTrimmerThumb: UIView {
             self.setNeedsLayout()
             
             if isActive {
-                setIdleColor()
-            } else {
                 updateColor()
+            } else {
+                setIdleColor()
             }
         }
     }
@@ -44,32 +44,32 @@ class VideoTrimmerThumb: UIView {
 
 	// MARK: - Private
 	public func updateColor() {
-		let color = UIColor.systemYellow
+		let color = YPConfig.colors.trimmerMainSelectedColor
 		leadingView.backgroundColor = color
 		trailingView.backgroundColor = color
 		topView.backgroundColor = color
 		bottomView.backgroundColor = color
         
-        leadingChevronImageView.tintColor = .black
+        leadingChevronImageView.tintColor = YPConfig.colors.trimmerHandleSelectedColor
         leadingChevronImageView.tintAdjustmentMode = .normal
         
-        trailingChevronView.tintColor = .black
+        trailingChevronView.tintColor = YPConfig.colors.trimmerHandleSelectedColor
         trailingChevronView.tintAdjustmentMode = .normal
         
         self.layoutIfNeeded()
 	}
     
     public func setIdleColor() {
-        let color = UIColor.black
+        let color = YPConfig.colors.trimmerMainColor
         leadingView.backgroundColor = color
         trailingView.backgroundColor = color
         topView.backgroundColor = color
         bottomView.backgroundColor = color
         
-        leadingChevronImageView.tintColor = .white
+        leadingChevronImageView.tintColor = YPConfig.colors.trimmerHandleColor
         leadingChevronImageView.tintAdjustmentMode = .normal
         
-        trailingChevronView.tintColor = .white
+        trailingChevronView.tintColor = YPConfig.colors.trimmerHandleColor
         trailingChevronView.tintAdjustmentMode = .normal
         
         self.layoutIfNeeded()

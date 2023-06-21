@@ -60,8 +60,12 @@ public struct YPColors {
     
     /// The color of the main border of the view
     public var trimmerMainColor: UIColor = .ypLabel
+    /// The color of the main border of the view when is selected
+    public var trimmerMainSelectedColor: UIColor = .systemYellow
     /// The color of the handles on the side of the view
     public var trimmerHandleColor: UIColor = .ypSystemBackground
+    /// The color of the handles on the side of the view when is selected
+    public var trimmerHandleSelectedColor: UIColor = .ypLabel
     /// The color of the position indicator
     public var positionLineColor: UIColor = .ypSystemBackground
     

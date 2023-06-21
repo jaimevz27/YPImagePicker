@@ -14,7 +14,8 @@ import AVFoundation
 
 	// events for changing selectedRange ("trimming")
 	static let didBeginTrimming = UIControl.Event(rawValue:     0b00000001 << 24)
-	static let selectedRangeChanged = UIControl.Event(rawValue: 0b00000010 << 24)
+	static let selectedStartRangeChanged = UIControl.Event(rawValue: 0b00000010 << 24)
+    static let selectedEndRangeChanged = UIControl.Event(rawValue: 0b01000000 << 24)
 	static let didEndTrimming = UIControl.Event(rawValue:       0b00000100 << 24)
 
 	// events for scrubbing the progress indicator ("scrubbing")
@@ -623,7 +624,7 @@ import AVFoundation
 				didClampWhilePanning = didClamp
 
 				selectedRange = CMTimeRange(start: time, end: selectedRange.end)
-				sendActions(for: Self.selectedRangeChanged)
+				sendActions(for: Self.selectedStartRangeChanged)
 				setNeedsLayout()
 
 				startZoomWaitTimer()
@@ -686,7 +687,7 @@ import AVFoundation
 				didClampWhilePanning = didClamp
 
 				selectedRange = CMTimeRange(start: selectedRange.start, end: time)
-				sendActions(for: Self.selectedRangeChanged)
+				sendActions(for: Self.selectedEndRangeChanged)
 				setNeedsLayout()
 
 				startZoomWaitTimer()

@@ -49,7 +49,8 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         trimmer.maximumDuration = CMTime(seconds: YPConfig.video.trimmerMaxDuration, preferredTimescale: 600)
         trimmer.addTarget(self, action: #selector(didBeginTrimming(_:)), for: VideoTrimmer.didBeginTrimming)
         trimmer.addTarget(self, action: #selector(didEndTrimming(_:)), for: VideoTrimmer.didEndTrimming)
-        trimmer.addTarget(self, action: #selector(selectedRangeDidChanged(_:)), for: VideoTrimmer.selectedRangeChanged)
+        trimmer.addTarget(self, action: #selector(selectedStartRangeDidChanged(_:)), for: VideoTrimmer.selectedStartRangeChanged)
+        trimmer.addTarget(self, action: #selector(selectedEndRangeDidChanged(_:)), for: VideoTrimmer.selectedEndRangeChanged)
         trimmer.addTarget(self, action: #selector(didBeginScrubbing(_:)), for: VideoTrimmer.didBeginScrubbing)
         trimmer.addTarget(self, action: #selector(didEndScrubbing(_:)), for: VideoTrimmer.didEndScrubbing)
         trimmer.addTarget(self, action: #selector(progressDidChanged(_:)), for: VideoTrimmer.progressChanged)
@@ -245,19 +246,22 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         }
 
         if wasPlaying == true {
-            videoView.player.play()
+            //videoView.player.play()
         }
 
         updatePlayerAsset()
     }
 
-    @objc private func selectedRangeDidChanged(_ sender: VideoTrimmer) {
+    @objc private func selectedStartRangeDidChanged(_ sender: VideoTrimmer) {
         updateLabels()
-        if lblVideoTimeRange.alpha == 0 {
-            UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseOut]) {
-                self.lblVideoTimeRange.alpha = 1
-            }
-        }
+        updateTrimmerRange()
+        videoView.player.seek(to: trimmer.selectedRange.start, toleranceBefore: .zero, toleranceAfter: .zero)
+    }
+    
+    @objc private func selectedEndRangeDidChanged(_ sender: VideoTrimmer) {
+        updateLabels()
+        updateTrimmerRange()
+        videoView.player.seek(to: trimmer.selectedRange.end, toleranceBefore: .zero, toleranceAfter: .zero)
     }
 
     @objc private func didBeginScrubbing(_ sender: VideoTrimmer) {
@@ -296,6 +300,14 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         let trimmedAsset = inputAsset.trimmedComposition(outputRange)
         if trimmedAsset != videoView.player.currentItem?.asset {
             videoView.player.replaceCurrentItem(with: AVPlayerItem(asset: trimmedAsset))
+        }
+    }
+    
+    private func updateTrimmerRange() {
+        if lblVideoTimeRange.alpha == 0 {
+            UIView.animate(withDuration: 0.2, delay: 0.0, options: [.curveEaseOut]) {
+                self.lblVideoTimeRange.alpha = 1
+            }
         }
     }
     

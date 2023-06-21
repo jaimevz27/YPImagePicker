@@ -65,11 +65,6 @@ public struct YPColors {
     /// The color of the position indicator
     public var positionLineColor: UIColor = .ypSystemBackground
     
-    // MARK: - Cover selector
-    
-    /// The color of the cover selector border
-    public var coverSelectorBorderColor: UIColor = .offWhiteOrBlack
-    
     // MARK: - Progress bar
     
     /// The color for the progress bar when processing video or images. The all track color.

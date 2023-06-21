@@ -58,16 +58,15 @@ import AVFoundation
 				let duration = asset.duration
 				range = CMTimeRange(start: .zero, duration: duration)
                 
-                //Si el video dura mas que el tiempo minimo, se elige el tiempo minimo
+                //if the video length is longer than minimum duration time, defaults to the lesser time
                 if CMTimeCompare(duration, minimumDuration) == 1 {
-                    let defaultRange = CMTimeRange(start: .zero, duration: minimumDuration)
-                    selectedRange = defaultRange
+                    selectedRange = CMTimeRange(start: .zero, duration: minimumDuration)
                 } else {
                     selectedRange = range
                 }
                 
-                //Si el video dura menos que el tiempo maximo, se elige la duracion como tiempo maximo
-                if CMTimeCompare(duration, maximumDuration) == -1 {
+                //if maximum duration is not setted or video full length is lower than maximum duration, defaults to video full length.
+                if maximumDuration == .zero || CMTimeCompare(duration, maximumDuration) == -1 {
                     maximumDuration = duration
                 }
             
@@ -87,13 +86,14 @@ import AVFoundation
 
 	// a clip cannot be trimmed shorter than this duration
 	var minimumDuration: CMTime = .zero
+    
+    // a clip cannot be trimmed larger than this duration
     var maximumDuration: CMTime = .zero
 
 	// the available range of the asset.
 	// Will be set to the full duration of the asset when assigning a new asset
 	var range: CMTimeRange = .invalid {
 		didSet {
-            ypLog("Range Setup")
 			setNeedsLayout()
 		}
 	}
@@ -102,9 +102,6 @@ import AVFoundation
 	// when changing asset.
 	var selectedRange: CMTimeRange = .invalid {
 		didSet {
-            ypLog("SelectedRange Setup")
-            ypLog("start \(CMTimeGetSeconds(selectedRange.start))")
-            ypLog("end \(CMTimeGetSeconds(selectedRange.end))")
 			setNeedsLayout()
 		}
 	}
@@ -243,7 +240,10 @@ import AVFoundation
 		progressIndicator.layer.shadowRadius = 2
 		progressIndicator.layer.shadowOpacity = 0.25
 		progressIndicator.layer.cornerRadius = 2
-//		progressIndicator.layer.cornerCurve = .continuous
+        
+        if #available(iOS 13.0, *) {
+            progressIndicator.layer.cornerCurve = .continuous
+        }
 
 		addSubview(shadowView)
 		wrapperView.clipsToBounds = true
@@ -263,15 +263,24 @@ import AVFoundation
 
 		thumbnailWrapperView.backgroundColor = trackBackgroundColor
 		thumbnailWrapperView.layer.cornerRadius = 6
-//		thumbnailWrapperView.layer.cornerCurve = .continuous
+        
+        if #available(iOS 13.0, *) {
+            thumbnailWrapperView.layer.cornerCurve = .continuous
+        }
 
 		leadingThumbRest.layer.cornerRadius = 6
 		leadingThumbRest.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMinXMinYCorner]
-//		leadingThumbRest.layer.cornerCurve = .continuous
+        
+        if #available(iOS 13.0, *) {
+            leadingThumbRest.layer.cornerCurve = .continuous
+        }
 
 		trailingThumbRest.layer.cornerRadius = 6
 		trailingThumbRest.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
-//		trailingThumbRest.layer.cornerCurve = .continuous
+        
+        if #available(iOS 13.0, *) {
+            trailingThumbRest.layer.cornerCurve = .continuous
+        }
 
 		shadowView.layer.shadowColor = UIColor.black.cgColor
 		shadowView.layer.shadowOffset = .zero
@@ -583,12 +592,6 @@ import AVFoundation
 				var time = timeForLocation(location.x + grabberOffset)
 				let newDuration = CMTimeSubtract(selectedRange.end, time)
             
-                print("time: \(CMTimeGetSeconds(time))")
-                print("selected start: \(CMTimeGetSeconds(selectedRange.start))")
-                print("newDuration: \(CMTimeGetSeconds(newDuration))")
-                print("minimunDuration: \(CMTimeGetSeconds(minimumDuration))")
-                print("maximumDuration: \(CMTimeGetSeconds(maximumDuration))")
-
 				var didClamp = false
 				if CMTimeCompare(newDuration, minimumDuration) == -1 {
 					time = CMTimeSubtract(selectedRange.end, minimumDuration)
@@ -652,11 +655,6 @@ import AVFoundation
 				var time = timeForLocation(location.x - grabberOffset)
 
 				let newDuration = CMTimeSubtract(time, selectedRange.start)
-            
-                print("time: \(CMTimeGetSeconds(time))")
-                print("selected start: \(CMTimeGetSeconds(selectedRange.start))")
-                print("newDuration: \(CMTimeGetSeconds(newDuration))")
-                print("minimunDuration: \(CMTimeGetSeconds(minimumDuration))")
 
 				var didClamp = false
 				if CMTimeCompare(newDuration, minimumDuration) == -1 {
@@ -673,7 +671,6 @@ import AVFoundation
 				}
             
                 if CMTimeCompare(maximumDuration, newDuration) == -1 {
-                    print("Maximo alcanzado")
                     time = CMTimeAdd(selectedRange.start, maximumDuration)
                     didClamp = true
                 }
@@ -729,13 +726,6 @@ import AVFoundation
 		if left < 0 {
 			left = -inset
 		}
-        
-        ypLog("left \(left)")
-        ypLog("right \(right)")
-        
-        ypLog("selectedRangeStart \(CMTimeGetSeconds(selectedRange.start))")
-        ypLog("selectedRangeEnd \(CMTimeGetSeconds(selectedRange.end))")
-        ypLog("size is: \(size)")
 
 		let rect = CGRect(origin: .zero, size: size)
 		shadowView.frame = rect

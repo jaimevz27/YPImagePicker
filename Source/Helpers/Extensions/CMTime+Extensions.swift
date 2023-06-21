@@ -14,8 +14,8 @@ extension CMTime {
         let nanoseconds = Int(numberOfNanosecondsFloat)
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .positional
-        formatter.zeroFormattingBehavior = .pad
+        //formatter.zeroFormattingBehavior = .pad
         formatter.allowedUnits = [.minute, .second]
-        return String(format: "%@", formatter.string(from: offset) ?? "00:00")
+        return String(format: "%@", formatter.string(from: offset) ?? "0:00")
     }
 }

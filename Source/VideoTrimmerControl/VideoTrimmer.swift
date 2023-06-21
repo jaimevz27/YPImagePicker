@@ -58,6 +58,7 @@ import AVFoundation
 			if let asset = asset {
 				let duration = asset.duration
 				range = CMTimeRange(start: .zero, duration: duration)
+                videoDuration = duration
                 
                 //if maximum duration is not setted or video full length is lower than maximum duration, defaults to video full length.
                 if maximumDuration == .zero || CMTimeCompare(duration, maximumDuration) == -1 {
@@ -71,6 +72,7 @@ import AVFoundation
                     selectedRange = range
                 }
             
+                updateThumbColor()
 				lastKnownViewSizeForThumbnailGeneration = .zero
 				setNeedsLayout()
 			}
@@ -90,6 +92,9 @@ import AVFoundation
     
     // a clip cannot be trimmed larger than this duration
     var maximumDuration: CMTime = .zero
+    
+    //Total video length
+    var videoDuration: CMTime = .zero
 
 	// the available range of the asset.
 	// Will be set to the full duration of the asset when assigning a new asset
@@ -256,8 +261,8 @@ import AVFoundation
 
 		thumbnailClipView.clipsToBounds = true
 		thumbnailTrackView.clipsToBounds = true
-		thumbnailLeadingCoverView.backgroundColor = UIColor(white: 1, alpha: 0.75)
-		thumbnailTrailingCoverView.backgroundColor = UIColor(white: 1, alpha: 0.75)
+		thumbnailLeadingCoverView.backgroundColor = UIColor(white: 0, alpha: 0.75)
+		thumbnailTrailingCoverView.backgroundColor = UIColor(white: 0, alpha: 0.75)
 
 		leadingThumbRest.backgroundColor = thumbRestColor
 		trailingThumbRest.backgroundColor = thumbRestColor
@@ -475,6 +480,8 @@ import AVFoundation
 
 		impactFeedbackGenerator = UIImpactFeedbackGenerator(style: .heavy)
 		impactFeedbackGenerator?.prepare()
+        
+        updateThumbColor()
 
 		UIView.animate(withDuration: 0.25, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
 			self.updateProgressIndicator()
@@ -486,6 +493,8 @@ import AVFoundation
 		stopZoomIfNeeded()
 		impactFeedbackGenerator = nil
 		sendActions(for: Self.didEndTrimming)
+        
+        updateThumbColor()
 
 		UIView.animate(withDuration: 0.25, delay: 0, options: [.beginFromCurrentState, .allowUserInteraction], animations: {
 			self.updateProgressIndicator()
@@ -517,7 +526,14 @@ import AVFoundation
 		}
 		progressIndicatorControl.alpha = progressIndicator.alpha
 	}
-
+    
+    private func updateThumbColor() {
+        if selectedRange.start == .zero && selectedRange.end == videoDuration {
+            thumbView.isActive = false
+        } else {
+            thumbView.isActive = true
+        }
+    }
 
 	// MARK: - Input
 	@objc private func thumbnailPanned(_ sender: UILongPressGestureRecognizer) {

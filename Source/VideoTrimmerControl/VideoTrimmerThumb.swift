@@ -9,7 +9,18 @@
 import UIKit
 
 class VideoTrimmerThumb: UIView {
-	var isActive = false
+    var isActive = false {
+        didSet {
+            
+            self.setNeedsLayout()
+            
+            if isActive {
+                setIdleColor()
+            } else {
+                updateColor()
+            }
+        }
+    }
 
 	var leadingChevronImageView = UIImageView(image: imageFromBundle("vtc_chevron_left"))
 	var trailingChevronView = UIImageView(image: imageFromBundle("vtc_chevron_right"))
@@ -32,31 +43,53 @@ class VideoTrimmerThumb: UIView {
 	}
 
 	// MARK: - Private
-	private func updateColor() {
+	public func updateColor() {
 		let color = UIColor.systemYellow
 		leadingView.backgroundColor = color
 		trailingView.backgroundColor = color
 		topView.backgroundColor = color
 		bottomView.backgroundColor = color
+        
+        leadingChevronImageView.tintColor = .black
+        leadingChevronImageView.tintAdjustmentMode = .normal
+        
+        trailingChevronView.tintColor = .black
+        trailingChevronView.tintAdjustmentMode = .normal
+        
+        self.layoutIfNeeded()
 	}
+    
+    public func setIdleColor() {
+        let color = UIColor.black
+        leadingView.backgroundColor = color
+        trailingView.backgroundColor = color
+        topView.backgroundColor = color
+        bottomView.backgroundColor = color
+        
+        leadingChevronImageView.tintColor = .white
+        leadingChevronImageView.tintAdjustmentMode = .normal
+        
+        trailingChevronView.tintColor = .white
+        trailingChevronView.tintAdjustmentMode = .normal
+        
+        self.layoutIfNeeded()
+    }
 
 	private func setup() {
 
 		leadingChevronImageView.contentMode = .scaleAspectFill
 		trailingChevronView.contentMode = .scaleAspectFill
 
-//		leadingChevronImageView.tintColor = .white
-//		trailingChevronView.tintColor = .white
-//
-//		leadingChevronImageView.tintAdjustmentMode = .normal
-//		trailingChevronView.tintAdjustmentMode = .normal
-
 		leadingView.layer.cornerRadius = 6
-//		leadingView.layer.cornerCurve = .continuous
+        if #available(iOS 13.0, *) {
+            leadingView.layer.cornerCurve = .continuous
+        }
 		leadingView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMinXMinYCorner]
 
 		trailingView.layer.cornerRadius = 6
-//		trailingView.layer.cornerCurve = .continuous
+        if #available(iOS 13.0, *) {
+            trailingView.layer.cornerCurve = .continuous
+        }
 		trailingView.layer.maskedCorners = [.layerMaxXMaxYCorner, .layerMaxXMinYCorner]
 
 		leadingView.addSubview(leadingChevronImageView)
@@ -76,7 +109,7 @@ class VideoTrimmerThumb: UIView {
 		wrapperView.addSubview(leadingGrabber)
 		wrapperView.addSubview(trailingGrabber)
 
-		updateColor()
+        setIdleColor()
 	}
 
 

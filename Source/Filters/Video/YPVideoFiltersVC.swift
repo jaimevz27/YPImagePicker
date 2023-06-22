@@ -298,12 +298,20 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }
 
     private func updatePlayerAsset() {
+        
+        ypLog("updatePlayerAsset - trimmingState \(trimmer.trimmingState)")
+        ypLog("updatePlayerAsset - selectedRange start \(CMTimeGetSeconds(trimmer.selectedRange.start))")
+        ypLog("updatePlayerAsset - selectedRange end \(CMTimeGetSeconds(trimmer.selectedRange.end))")
+        ypLog("updatePlayerAsset - progress \(CMTimeGetSeconds(trimmer.progress))")
+        
         let outputRange = trimmer.trimmingState == .none ? trimmer.selectedRange : inputAsset.fullRange
         let trimmedAsset = inputAsset.trimmedComposition(outputRange)
         if trimmedAsset != videoView.player.currentItem?.asset {
+            ypLog("replaceCurrentItem before")
             videoView.player.replaceCurrentItem(with: AVPlayerItem(asset: trimmedAsset))
+            ypLog("replaceCurrentItem after")
+            ypLog("replaceCurrentItem - progress \(CMTimeGetSeconds(trimmer.progress))")
         }
-        ypLog("updatePlayerAsset called")
     }
     
     private func updateTrimmerRange() {
@@ -317,6 +325,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     // MARK: - Trimmer playback
     
     @objc private func itemDidFinishPlaying(_ notification: Notification) {
+        ypLog("itemDidFinishPlaying")
         videoView.player.seek(to: trimmer.selectedRange.start)
     }
 }

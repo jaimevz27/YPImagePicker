@@ -58,7 +58,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }()
     private let lblVideoTimeRange: UILabel = {
         let v = UILabel()
-        v.textColor = .ypLabel
+        v.textColor = .white
         v.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         v.alpha = 0.0
         return v
@@ -74,7 +74,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
     }()
     private let videoLengthView: UIView = {
         let v = UIView()
-        v.backgroundColor = .black
+        v.backgroundColor = UIColor(r: 28, g: 28, b: 30)
         v.clipsToBounds = true
         v.layer.cornerRadius = 10
         v.setContentHuggingPriority(.defaultLow, for: .horizontal)
@@ -204,7 +204,7 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             let destinationURL = URL(fileURLWithPath: NSTemporaryDirectory())
                 .appendingUniquePathComponent(pathExtension: YPConfig.video.fileType.fileExtension)
             
-            _ = trimmedAsset.export(to: destinationURL) { [weak self] session in
+            _ = trimmedAsset.export(to: destinationURL, removeOldFile: true) { [weak self] session in
                 switch session.status {
                 case .completed:
                     DispatchQueue.main.async {

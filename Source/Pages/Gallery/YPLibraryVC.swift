@@ -229,14 +229,23 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
     }
     
     func refreshMediaRequest() {
-        let options = buildPHFetchOptions()
-
-        if let collection = mediaManager.collection {
-            mediaManager.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
-        } else {
-            mediaManager.fetchResult = PHAsset.fetchAssets(with: options)
-        }
         
+        DispatchQueue.global().async {
+            let options = self.buildPHFetchOptions()
+            
+            if let collection = self.mediaManager.collection {
+                self.mediaManager.fetchResult = PHAsset.fetchAssets(in: collection, options: options)
+            } else {
+                self.mediaManager.fetchResult = PHAsset.fetchAssets(with: options)
+            }
+            
+            DispatchQueue.main.async {
+                self.refreshMediaRequestAfterFetch()
+            }
+        }
+    }
+        
+    private func refreshMediaRequestAfterFetch() {
         if mediaManager.hasResultItems,
         let firstAsset = mediaManager.getAsset(at: 0) {
             changeAsset(firstAsset)

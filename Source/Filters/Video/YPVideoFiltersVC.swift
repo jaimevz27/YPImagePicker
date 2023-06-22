@@ -119,16 +119,10 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
             ypLog("trimmingState \(self.trimmer.trimmingState)")
             ypLog("time \(CMTimeGetSeconds(time))")
             ypLog("Start \(CMTimeGetSeconds(self.trimmer.selectedRange.start))")
-//            let finalTime = self.trimmer.trimmingState == .none ? CMTimeAdd(time, self.trimmer.selectedRange.start) : time
-//            ypLog(" addPeriodicTimeObserver trimmer progress is: \(CMTimeGetSeconds(finalTime))")
-//            print("======================================================")
-//            self.trimmer.progress = finalTime
-            
-            if self.trimmer.trimmingState == .none {
-                ypLog("no cambiamos el progreso")
-            } else {
-                self.trimmer.progress = time
-            }
+            let finalTime = self.trimmer.trimmingState == .none ? CMTimeAdd(time, self.trimmer.selectedRange.start) : time
+            ypLog(" addPeriodicTimeObserver trimmer progress is: \(CMTimeGetSeconds(finalTime))")
+            print("======================================================")
+            self.trimmer.progress = finalTime
         }
 
         updateLabels()
@@ -255,6 +249,10 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
                 self.lblVideoTimeRange.alpha = 0
             }
         }
+        
+        if videoView.player.timeControlStatus == .paused {
+            videoView.showPlayImage(show: true)
+        }
 
         updatePlayerAsset()
     }
@@ -263,12 +261,14 @@ public final class YPVideoFiltersVC: UIViewController, IsMediaFilterVC {
         updateLabels()
         updateTrimmerRange()
         videoView.player.seek(to: trimmer.selectedRange.start, toleranceBefore: .zero, toleranceAfter: .zero)
+        videoView.showPlayImage(show: false)
     }
     
     @objc private func selectedEndRangeDidChanged(_ sender: VideoTrimmer) {
         updateLabels()
         updateTrimmerRange()
         videoView.player.seek(to: trimmer.selectedRange.end, toleranceBefore: .zero, toleranceAfter: .zero)
+        videoView.showPlayImage(show: false)
     }
 
     @objc private func didBeginScrubbing(_ sender: VideoTrimmer) {

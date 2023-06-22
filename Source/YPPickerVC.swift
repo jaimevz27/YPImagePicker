@@ -225,11 +225,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
         label.text = aTitle
         // Use YPConfig font
         label.font = YPConfig.fonts.pickerTitleFont
-
+        label.textColor = .white
         // Use custom textColor if set by user.
-        if let navBarTitleColor = UINavigationBar.appearance().titleTextAttributes?[.foregroundColor] as? UIColor {
-            label.textColor = navBarTitleColor
-        }
+//        if let navBarTitleColor = UINavigationBar.appearance().titleTextAttributes?[.foregroundColor] as? UIColor {
+//            label.textColor = navBarTitleColor
+//        }
         
         if YPConfig.library.options != nil {
             titleView.subviews(
@@ -243,11 +243,11 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
             arrow.image = arrow.image?.withRenderingMode(.alwaysTemplate)
             arrow.tintColor = .ypLabel
             
-            let attributes = UINavigationBar.appearance().titleTextAttributes
-            if let attributes = attributes, let foregroundColor = attributes[.foregroundColor] as? UIColor {
+//            let attributes = UINavigationBar.appearance().titleTextAttributes
+//            if let attributes = attributes, let foregroundColor = attributes[.foregroundColor] as? UIColor {
                 arrow.image = arrow.image?.withRenderingMode(.alwaysTemplate)
-                arrow.tintColor = foregroundColor
-            }
+            arrow.tintColor = .white //foregroundColor
+//            }
             
             let button = UIButton()
             button.addTarget(self, action: #selector(navBarTapped), for: .touchUpInside)

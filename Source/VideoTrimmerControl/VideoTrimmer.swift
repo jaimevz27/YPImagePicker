@@ -647,6 +647,10 @@ import AVFoundation
 				startZoomWaitTimer()
 
 			case .ended:
+            
+                progress = selectedRange.start
+                setNeedsLayout()
+                sendActions(for: Self.progressChanged)
 				stopPanning()
 
 			case .cancelled:
@@ -710,6 +714,11 @@ import AVFoundation
 				startZoomWaitTimer()
 
 			case .ended:
+            
+                progress = selectedRange.end
+                setNeedsLayout()
+                sendActions(for: Self.progressChanged)
+            
 				stopPanning()
 
 			case .cancelled:

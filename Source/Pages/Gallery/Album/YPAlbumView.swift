@@ -16,12 +16,6 @@ class YPAlbumView: UIView {
     
     convenience init() {
         self.init(frame: .zero)
-        
-        if #available(iOS 13, *) {
-            let spinnerColor = UIColor.gray
-            spinner.color = spinnerColor
-            spinner.style = .large
-        }
 
         subviews(
             tableView,

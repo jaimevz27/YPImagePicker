@@ -43,6 +43,9 @@ public struct YPColors {
     
     /// The background color of Albums
     public var albumScreenBackgroundColor: UIColor = .offWhiteOrBlack
+    
+    /// The background color of Albums Cell
+    public var albumCellBackgroundColor: UIColor = .offWhiteOrBlack
 
     /// A color for bottom buttons (photo, video, all photos).
     public var bottomMenuItemBackgroundColor: UIColor = .clear

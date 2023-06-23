@@ -11,7 +11,6 @@ extension CMTime {
     var displayString: String {
         let offset = TimeInterval(seconds)
         let numberOfNanosecondsFloat = (offset - TimeInterval(Int(offset))) * 1000.0
-        let nanoseconds = Int(numberOfNanosecondsFloat)
         let formatter = DateComponentsFormatter()
         formatter.unitsStyle = .positional
         formatter.zeroFormattingBehavior = .pad

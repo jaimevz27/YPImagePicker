@@ -19,6 +19,7 @@ public class YPSelectionsVerticalGalleryCell: UICollectionViewCell {
     let editIcon = UIView()
     let editSquare = UIView()
     let removeButton = UIButton()
+    let caption = UITextField()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,10 +28,16 @@ public class YPSelectionsVerticalGalleryCell: UICollectionViewCell {
             imageView,
             editIcon,
             editSquare,
-            removeButton
+            removeButton,
+            caption
         )
         
-        imageView.fillContainer()
+        imageView.fillHorizontally()
+        imageView.heightEqualsWidth()
+        imageView.Bottom == caption.Top - 10
+        caption.height(30)
+        caption.fillHorizontally()
+        caption.Bottom == self.Bottom
         editIcon.size(32).left(12).bottom(12)
         editSquare.size(16)
         editSquare.CenterY == editIcon.CenterY
@@ -38,11 +45,14 @@ public class YPSelectionsVerticalGalleryCell: UICollectionViewCell {
         
         removeButton.top(12).trailing(12)
         
-        layer.shadowColor = UIColor.black.cgColor
-        layer.shadowOpacity = 0.2
-        layer.shadowOffset = CGSize(width: 4, height: 7)
-        layer.shadowRadius = 5
-        layer.backgroundColor = UIColor.clear.cgColor
+//        layer.shadowColor = UIColor.black.cgColor
+//        layer.shadowOpacity = 0.2
+//        layer.shadowOffset = CGSize(width: 4, height: 7)
+//        layer.shadowRadius = 5
+//        layer.backgroundColor = UIColor.clear.cgColor
+        
+        caption.backgroundColor = .yellow
+        
         imageView.style { i in
             i.clipsToBounds = true
             i.contentMode = .scaleAspectFill
@@ -54,6 +64,12 @@ public class YPSelectionsVerticalGalleryCell: UICollectionViewCell {
         editSquare.style { v in
             v.layer.borderWidth = 1
             v.layer.borderColor = UIColor.ypLabel.cgColor
+        }
+        caption.style { v in
+            v.layer.borderWidth = 1
+            v.layer.borderColor = UIColor.ypLabel.cgColor
+            v.layer.cornerRadius = 8
+            v.clipsToBounds = true
         }
         removeButton.setImage(YPConfig.icons.removeImage, for: .normal)
         removeButton.addTarget(self, action: #selector(removeButtonTapped), for: .touchUpInside)

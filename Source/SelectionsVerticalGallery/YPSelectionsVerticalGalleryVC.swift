@@ -133,15 +133,4 @@ extension YPSelectionsVerticalGalleryVC: UICollectionViewDelegate {
             present(navVC, animated: true, completion: nil)
         }
     }
-    
-    // Set "paging" behaviour when scrolling backwards.
-    // This works by having `targetContentOffset(forProposedContentOffset: withScrollingVelocity` overriden
-    // in the collection view Flow subclass & using UIScrollViewDecelerationRateFast
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let isScrollingBackwards = scrollView.contentOffset.x < lastContentOffsetX
-        scrollView.decelerationRate = isScrollingBackwards
-            ? UIScrollView.DecelerationRate.fast
-            : UIScrollView.DecelerationRate.normal
-        lastContentOffsetX = scrollView.contentOffset.x
-    }
 }
